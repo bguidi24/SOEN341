@@ -7,7 +7,7 @@ This project involves the development of a versatile communication platform that
 - Benedetto Guidi (40228072) - bguidi24
 - Wael Makarem 
 - David Macicasan
-- write here
+- Thomas Richer
 - write here
 - write here
 - write here
