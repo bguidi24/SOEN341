@@ -8,7 +8,7 @@ This project involves the development of a versatile communication platform that
 - Wael Makarem 
 - David Macicasan
 - Thomas Richer
-- write here
+- Mohammad Almasri (40248819)
 - write here
 - write here
 - write here
