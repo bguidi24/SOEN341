@@ -6,7 +6,7 @@ This project involves the development of a versatile communication platform that
 ## Team Members
 - Benedetto Guidi (40228072) - bguidi24
 - Wael Makarem 
-- write here
+- David Macicasan
 - write here
 - write here
 - write here
