@@ -4,7 +4,7 @@ To develop a versatile communication platform that facilitates seamless interact
 ## Project
 Write here
 ## Team Members
-Benedetto Guidi
+Benedetto Guidi (40228072) - bguidi24
 Wael Makarem 
 write here
 write here
