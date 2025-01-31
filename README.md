@@ -9,7 +9,7 @@ This project involves the development of a versatile communication platform that
 - David Macicasan
 - Thomas Richer
 - Mohammad Almasri (40248819)
-- Muaaz Ahmed (40299591)
+- Muaaz Ahmed (40299591) - MAZAH11
 - write here
 - write here
 ## Technologies
