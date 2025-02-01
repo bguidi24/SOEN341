@@ -6,7 +6,7 @@ This project involves the development of a versatile communication platform that
 ## Team Members
 - Benedetto Guidi (40228072) - bguidi24
 - Wael Makarem 
-- David Macicasan
+- David Macicasan (40207245) - timele55
 - Thomas Richer (40222378) - thomasricher
 - Mohammad Almasri (40248819) - AlmasriMohammad
 - Muaaz Ahmed (40299591) - MAZAH11
