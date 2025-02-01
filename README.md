@@ -13,5 +13,6 @@ This project involves the development of a versatile communication platform that
 - Hossam Mostafa (40245337) - hossamaldin
 - Harout Kayabalian (40209920) - Harkay99
 
-## Technologies
-TBD
+## Technologies and Programming Languages
+-java
+
