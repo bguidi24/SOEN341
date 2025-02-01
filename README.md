@@ -11,6 +11,7 @@ This project involves the development of a versatile communication platform that
 - Mohammad Almasri (40248819) - AlmasriMohammad
 - Muaaz Ahmed (40299591) - MAZAH11
 - Hossam Mostafa (40245337) - hossamaldin
+- Harout Kayabalian (40209920) - Harkay99
 - write here
 ## Technologies
 TBD
