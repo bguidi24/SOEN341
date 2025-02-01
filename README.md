@@ -10,7 +10,7 @@ This project involves the development of a versatile communication platform that
 - Thomas Richer (40222378) - thomasricher
 - Mohammad Almasri (40248819) - AlmasriMohammad
 - Muaaz Ahmed (40299591) - MAZAH11
-- write here
+- Hossam Mostafa (40245337) - hossamaldin
 - write here
 ## Technologies
 TBD
