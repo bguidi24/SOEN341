@@ -44,56 +44,84 @@ Benedetto Guidi
 - READ.ME & Core Feature 3
 
 Deadline : Feb 01,2025
-Team Hours : 3 hours
+Team Hours : 4 hours
 _________________________________________________________________________________________________________________________
 
 Task Breakdown
-1. Core Feature 1: (Thomas)
-- Task 1: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
-- Task 2: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
-- Task 3: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
+1. Core Feature 1: Direct Messaging Between Users (Thomas)
+Task 1: Implement user-to-user messaging functionality.
+→ Assigned to: [Thomas / GitHub Username]
+→ Deadline: [Date]
+Task 2: Add validation for user permissions to initiate messaging.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
+Task 3: Integrate real-time messaging using WebSockets or similar.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
 
-2. Core Feature 2: (David)
-- Task 1: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
-- Task 2: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
-- Task 3: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
+2. Core Feature 2: Role-Based User Permissions (David)
+Task 1: Define role hierarchy and associated permissions in the database.
+→ Assigned to: [David / GitHub Username]
+→ Deadline: [Date]
+Task 2: Implement backend logic for permission checks in API endpoints.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
+Task 3: Test permission management with different roles.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
 
-3. Core Feature 3: (Bem)
-- Task 1: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
-- Task 2: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
-- Task 3: [Description] → Assigned to [Name / GitHub Username] → Deadline: [Date]
+3. Core Feature 3: User Authentication with 2FA (Bem)
+Task 1: Implement user login with email/password and two-factor authentication.
+→ Assigned to: [Bem / GitHub Username]
+→ Deadline: [Date]
+Task 2: Integrate OTP (One-Time Password) generation and verification.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
+Task 3: Enhance security by enforcing 2FA during sensitive operations.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
 
 4. Supporting Tasks:
 - Testing: [Assigned to Name / GitHub Username] → Deadline: [Date]
 - Documentation: [Assigned to Name / GitHub Username] → Deadline: [Date]
 - Code Review: [Assigned to Name / GitHub Username] → Deadline: [Date]
-_________________________________________________________________________________________________________________________
+Work Contribution Tracking
+4. Supporting Tasks:
+Testing: Ensure end-to-end testing for all implemented features.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
+Documentation: Update the README with instructions for new features.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
+Code Review: Review all PRs and ensure adherence to coding standards.
+→ Assigned to: [Name / GitHub Username]
+→ Deadline: [Date]
 
 Work Contribution Tracking
 1. GitHub Issues: (Harout & Hossam)
-- Create an issue for each task and assign it to the respective team members.
-- Each issue must include:
-  - Title: [Task name]
-  - Description: [Detailed description]
-  - Labels: [Tags like 'bug,' 'enhancement,' 'core feature']
-  - Milestone: [Sprint milestone]
+Create detailed GitHub issues for each task based on the screenshot.
+Title: Clearly state the task.
+Description: Provide detailed steps and expected behavior.
+Labels: Assign appropriate tags like ‘enhancement,’ ‘core feature,’ etc.
+Milestone: Link the issue to the respective sprint milestone.
 
 2. GitHub Pull Requests: (Mohammed & Muaaz)
-- Each team member submits a pull request for their assigned tasks.
-- PRs must reference related issue numbers (e.g., Fixes #12).
-- Assign reviewers for each PR.
+Submit pull requests for each completed task.
+Ensure PRs reference related issue numbers (e.g., Fixes #1).
+Assign at least two reviewers for each pull request.
+
 
 3. Progress Updates:
-- Weekly team meetings to update progress and blockers.
-- Update a shared GitHub wiki page with:
-  - Completed tasks
-  - Pending tasks
-  - Blockers or issues faced.
-_________________________________________________________________________________________________________________________
+Schedule weekly stand-up meetings to share progress and blockers.
+Maintain a shared GitHub wiki page with the following:
+Completed tasks: List of finished tasks.
+Pending tasks: List of ongoing and blocked tasks.
+Blockers or Issues: Description of challenges faced and proposed solutions.
 
 Checklist for Full Marks
 - [/ ] Tasks assigned to all 8 members with clear deadlines.
-- [ ] Each team member has at least one GitHub issue assigned to them.
-- [ ] Contributions are visible in GitHub commits and pull requests.
-- [ ] Equal distribution of tasks among all members.
-- [ ] GitHub wiki page updated weekly with progress and blockers.
+- [/ ] Each team member has at least one GitHub issue assigned to them.
+- [/ ] Contributions are visible in GitHub commits and pull requests.
+- [/ ] Equal distribution of tasks among all members.
+- [/ ] GitHub wiki page updated weekly with progress and blockers.
+
