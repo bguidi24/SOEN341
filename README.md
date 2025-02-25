@@ -14,5 +14,6 @@ This project involves the development of a versatile communication platform that
 - Harout Kayabalian (40209920) - Harkay99
 
 ## Technologies and Programming Languages
--java
+- React
+- Firebase
 
