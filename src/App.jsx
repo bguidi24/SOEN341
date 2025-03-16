@@ -4,6 +4,8 @@ import Detail from "./components/detail/Detail";
 import List from "./components/list/List";
 
 const App = () => {
+  const user = true;
+
   return (
     <div className='container'>
       <List/>

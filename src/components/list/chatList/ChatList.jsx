@@ -1,5 +1,6 @@
 import { useState } from "react"
 import "./chatList.css"
+import AddUser from "./addUser/addUser"
 
 const ChatList = () => {
     const [addMode, setAddMode]=useState(false)
@@ -57,7 +58,8 @@ const ChatList = () => {
                         Hello
                     </p>
                 </div>
-            </div>           <div className="item">
+            </div>           
+            <div className="item">
                 <img src="./avatar.png" alt="" />
                 <div className="texts" >
                     <span>
@@ -67,7 +69,8 @@ const ChatList = () => {
                         Hello
                     </p>
                 </div>
-            </div>           <div className="item">
+            </div>           
+            <div className="item">
                 <img src="./avatar.png" alt="" />
                 <div className="texts" >
                     <span>
@@ -77,7 +80,8 @@ const ChatList = () => {
                         Hello
                     </p>
                 </div>
-            </div>           <div className="item">
+            </div>           
+            <div className="item">
                 <img src="./avatar.png" alt="" />
                 <div className="texts" >
                     <span>
@@ -98,7 +102,8 @@ const ChatList = () => {
                         Hello
                     </p>
                 </div>
-            </div>           <div className="item">
+            </div>           
+            <div className="item">
                 <img src="./avatar.png" alt="" />
                 <div className="texts" >
                     <span>
@@ -108,7 +113,8 @@ const ChatList = () => {
                         Hello
                     </p>
                 </div>
-            </div>           <div className="item">
+            </div>           
+            <div className="item">
                 <img src="./avatar.png" alt="" />
                 <div className="texts" >
                     <span>
@@ -118,7 +124,8 @@ const ChatList = () => {
                         Hello
                     </p>
                 </div>
-            </div>           <div className="item">
+            </div>           
+            <div className="item">
                 <img src="./avatar.png" alt="" />
                 <div className="texts" >
                     <span>
@@ -129,6 +136,7 @@ const ChatList = () => {
                     </p>
                 </div>
             </div>
+            {addMode && <AddUser />}
         </div>
     )
   }
