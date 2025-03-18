@@ -1,121 +1,71 @@
-/* General container styling */
-.login-container {
-  width: 80vw;
-  height: 90vh;
-  background-color: rgba(17,25,40,0.75);
-  backdrop-filter: blur(19px) saturate(100%);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.125);
+.login {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 5%;
-  }
-  
-    
-    /* Style each form section */
-    .item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgb(58, 44, 104);
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      width: 100%;
-    }
-    
-    /* Headings */
-    .item h2 {
-      font-size: 22px;
-      color: #ffffff;
-      margin-bottom: 20px;
-    }
-    
-    /* Form styling */
+  gap: 100px;
+
+  .item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
     form {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100%;
-      gap: 15px;
-    }
-    
-    /* Input fields */
-    form input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-      outline: none;
-    }
-    
-    form input:focus {
-      border-color: #007bff;
-    }
-    
-    /* Buttons */
-    form button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      background: #007bff;
-      color: white;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    
-    form button:hover {
-      background: #0056b3;
-    }
-    
-    /* Separator */
-    .seperator {
-      width: 2px;
-      height: 200px;
-      background: #0056b3;
-    }
-    
-    /* Avatar upload */
-    .avatar-label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    
-    .avatar-img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 8px;
-      border: 2px solid #007bff;
-      padding: 3px;
-      transition: 0.3s;
-    }
-    
-    .avatar-img:hover {
-      border-color: #0056b3;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .login-container {
-        flex-direction: column;
-        gap: 50px;
+      justify-content: center;
+      gap: 20px;
+
+      input {
+        padding: 20px;
+        border: none;
+        outline: none;
+        background-color: rgba(17, 25, 40, 0.6);
+        color: white;
+        border-radius: 5px;
       }
-    
-      .seperator {
-        display: none;
+
+      label {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        text-decoration: underline;
+
+        img {
+          width: 50px;
+          height: 50px;
+          border-radius: 10px;
+          object-fit: cover;
+          opacity: 0.6;
+        }
+      }
+
+      button {
+        width: 100%;
+        padding: 20px;
+        border: none;
+        background-color: #1f8ef1;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+
+        &:disabled {
+          cursor: not-allowed;
+          background-color: #1f8ff19c;
+        }
       }
     }
-    
-  
+  }
+
+  .separator {
+    height: 80%;
+    width: 2px;
+    background-color: #dddddd35;
+  }
+}
