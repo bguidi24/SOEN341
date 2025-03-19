@@ -8,17 +8,36 @@ import {
     serverTimestamp,
     onSnapshot,
     query,
-    orderBy
+    orderBy,
+    where
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-const Chat = () => {
+const Chat = ({ channelId }) => {
     const [open, setOpen] = useState(false);   
     const [text, setText] = useState("");   
     const [messages, setMessages] = useState([]);
 
     const auth = getAuth();
     const user = auth.currentUser; // Get logged-in user
+
+    useEffect(() => {
+        if (!channelId) {
+            setMessages([]); // Clear messages if no channelId
+            return; // Don't fetch messages if no channel is selected
+        }
+    
+        const q = query(
+            collection(db, "channels", channelId, "messages"), // Adjusted path to use the subcollection
+            orderBy("timestamp", "asc")
+        );
+    
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        });
+    
+        return () => unsubscribe(); // Cleanup listener on unmount
+    }, [channelId]);
 
     const handleEmoji = e => {
         setText(prev => prev + e.emoji);
@@ -27,13 +46,20 @@ const Chat = () => {
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!text.trim()) return;
-
+        if (!text.trim() || !channelId) return;  // Ensure the message is not empty and a channel is selected
+        
+        const auth = getAuth();
+        const user = auth.currentUser; // Get logged-in user
+        
+        const sender = user ? user.uid : "guest";  // If logged in, use the user's UID; otherwise, "guest"
+        
         try {
-            await addDoc(collection(db, "messages"), {
+            // Ensure the channelId is passed correctly
+            await addDoc(collection(db, "channels", channelId, "messages"), {
                 text: text,
                 timestamp: serverTimestamp(),  // Firestore server time
-                sender: user ? user.uid : "guest", // Dynamic user ID
+                sender: sender, // Store either the user's UID or "guest"
+                channelId: channelId // Store the message under the selected channel
             });
             setText(""); // Clear input after sending
         } catch (error) {
@@ -41,24 +67,13 @@ const Chat = () => {
         }
     };
 
-    useEffect(() => {
-        const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
-    
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
-
-        return () => unsubscribe(); // Cleanup listener on unmount
-    }, []);
-
     return (
         <div className="chat">
             <div className="top">
-                <div className="user">
+                <div className="serverName">
                     <img src="./avatar.png" alt="" />
                     <div className="texts">
-                        <span>Channel Name</span>
-                        <p>Channel Description</p>
+                        <span>Server Name</span>
                     </div>
                 </div>
                 <div className="icons">
@@ -78,13 +93,13 @@ const Chat = () => {
                 ))}
             </div>
             <div className="bottom">
-                <div className="icons">
+            <div className="icons">
                     <img src="./img.png" alt="" />
                     <img src="./camera.png" alt="" />
                     <img src="./mic.png" alt="" />
                 </div>
                 <form className="messageInput" onSubmit={handleSendMessage}>
-                    <div className="messageContainer">
+                <div className="messageContainer">
                         <input 
                             type="text" 
                             placeholder="Type a message..." 
@@ -105,4 +120,4 @@ const Chat = () => {
     );
 };
 
-export default Chat
+export default Chat;
