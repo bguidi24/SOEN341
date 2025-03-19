@@ -1,0 +1,10 @@
+.channel {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    overflow: auto;
+    justify-content: space-between;
+    flex-direction: row;
+    background-image: linear-gradient(45deg, #0f0c29, #413b86);
+    border-bottom-left-radius: 12px;
+}

@@ -1,0 +1,92 @@
+.channelInfo {
+    height: 100%;
+    overflow: auto;
+    flex: 5;
+    /*background-image: url("/bg1.jpg");
+    background-size: cover;
+    background-image: linear-gradient(45deg, #0f0c29, #413b86);
+
+    .search {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .searchBar {
+        flex: 1;
+        background-color: rgba(17, 25, 40, 0.5);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        border-radius: 10px;
+        padding: 10px;
+
+        input {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            flex: 1;
+        }
+
+        img {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .add {
+        width: 36px;
+        height: 36px;
+        background-color: rgba(17, 25, 40, 0.5);
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+    }*/
+}
+
+.channelItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .texts {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        span {
+            font-weight: 500;
+            font-size: 18px;
+            font-family: Arial;
+        }
+    }
+}
+
+.channelItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.channelItem.selected {
+    background-color: rgba(255, 255, 255, 0.1); /* Selected channel background color */
+    border-left: 3px solid white; /* Highlight the left side */
+    transition: 0.1s;
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #121025; 
+    border-radius: 10px;
+}

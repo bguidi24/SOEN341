@@ -1,0 +1,42 @@
+.channelList {
+    height: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow: auto;
+    align-items: center;
+    background-color: #0b032d;
+    border-bottom-left-radius: 12px;
+    padding: 10px 0;
+    gap: 10px;
+}
+
+.server {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 30px;
+    cursor: pointer;
+    background-color: #313338;
+    border-radius: 50%;
+    transition: background 0.2s, transform 0.1s;
+
+    img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+}
+
+.server:hover {
+    background-color: #646872;
+    transform: scale(1.1);
+}
+
+.channelList::-webkit-scrollbar { 
+    display: none;
+}
