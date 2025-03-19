@@ -6,17 +6,20 @@ import Detail from "./components/detail/Detail"
 import List from "./components/list/List"
 import Login from "./components/login/Login"
 import { useUserStore } from "./lib/userStore";
+import { useChatStore } from "./lib/chatStore";
 
 const App = () => {
 
   const {currentUser, isLoading, fetchUserInfo} = useUserStore()
+  const {chatId} = useChatStore()
 
   useEffect(() => {
       const unSub = onAuthStateChanged(auth, (user) => {
-        fetchUserInfo(user.uid)        
+        fetchUserInfo(user?.uid)        
 
       });
-      return()=>{
+
+      return() => {
         unSub();
       };
   },[fetchUserInfo])
@@ -31,8 +34,8 @@ const App = () => {
         currentUser ?(
           <>
       <List/>
-      <Chat/>
-      <Detail/>
+      {chatId && <Chat/>}
+      {chatId && <Detail/>}
       </>
         ) : (<Login />)
       }
