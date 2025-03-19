@@ -1,14 +1,14 @@
-import ChatList from "./chatList/ChatList"
+import Channel from "./channel/Channel"
 import "./list.css"
 import UserInfo from "./userInfo/UserInfo"
 
-const List = () => {
+const List = ({ selectedChannel, setSelectedChannel }) => {
     return (
-        <div class className='list'>
+        <div className="list">
             <UserInfo/>
-            <ChatList/>
+            <Channel selectedChannel={selectedChannel} setSelectedChannel={setSelectedChannel} /> {/* Pass down the function */}
         </div>
-    )
-}
+    );
+};
 
-export default List
+export default List;
