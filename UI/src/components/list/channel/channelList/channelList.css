@@ -3,7 +3,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    overflow: auto;
+    overflow: visible;
     align-items: center;
     background-color: #0b032d;
     border-bottom-left-radius: 12px;
@@ -39,4 +39,121 @@
 
 .channelList::-webkit-scrollbar { 
     display: none;
+}
+
+.addServerButton {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 30px;
+    cursor: pointer;
+    background-color: #313338;
+    border-radius: 50%;
+    border: none;
+    position: relative;
+
+    img {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+}
+
+.addServerButton::after {
+    content: "Create New Server"; /* Text inside the tooltip */
+    position: absolute;
+    left: 115%; /* Position it to the right of the button */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #18191c;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 9999; /*Stays in front of every other container*/
+}
+
+.addServerButton:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+.addServerModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h3 {
+        margin-bottom: 10px;
+    }
+
+    input {
+        margin: 5px;
+        padding: 8px;
+        width: 100%;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+}
+
+.modalButtons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.cancelButton,
+.createButton {
+    padding: 8px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+.cancelButton {
+    background-color: #ccc;
+}
+
+.createButton {
+    background-color: #4caf50;
+    color: white;
+}
+
+.deleteServerButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+    transition: color 0.2s;
+}
+
+.deleteServerButton:hover {
+    color: red;
 }
