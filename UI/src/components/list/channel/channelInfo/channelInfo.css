@@ -150,3 +150,11 @@
     cursor: pointer;
     border-radius: 4px;
 }
+
+.deleteButton:hover {
+    background: darkred;
+}
+
+.cancelButton:hover {
+    background: rgb(71, 71, 71);
+}
