@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { db } from "../../../../firebase";
 import "./channelList.css"
-import { collection, getDocs, addDoc, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, onSnapshot} from "firebase/firestore";
 
 const ChannelList = ({ setCurrentServerId, currentServerId }) => {
 
@@ -11,30 +11,15 @@ const ChannelList = ({ setCurrentServerId, currentServerId }) => {
     const [newServerIcon, setNewServerIcon] = useState(""); // Store new server icon URL
 
     useEffect(() => {
-      const fetchServers = async () => {
-        try {
-          console.log("Fetching servers from Firestore..."); // Debugging log
+      const unsubscribe = onSnapshot(collection(db, "servers"), (snapshot) => {
+        const serverList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setServers(serverList);
+      });
     
-          const querySnapshot = await getDocs(collection(db, "servers"));
-    
-          if (querySnapshot.empty) {
-            console.warn("No servers found in Firestore.");
-            return;
-          }
-    
-          const serverList = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-    
-          console.log("Servers retrieved:", serverList); // Debugging log
-          setServers(serverList);
-        } catch (error) {
-          console.error("Error fetching servers:", error);
-        }
-      };
-    
-      fetchServers();
+      return () => unsubscribe(); // Cleanup listener on unmount
     }, []);
 
         // Handle creating a new server
@@ -80,73 +65,58 @@ const ChannelList = ({ setCurrentServerId, currentServerId }) => {
       }
     };
 
-    const handleDeleteServer = async (serverId) => {
-      if (!window.confirm("Are you sure you want to delete this server?")) return;
-    
-      try {
-        await deleteDoc(doc(db, "servers", serverId));
-        setServers((prevServers) => prevServers.filter((server) => server.id !== serverId));
-        console.log("Server deleted:", serverId);
-      } catch (error) {
-        console.error("Error deleting server:", error);
-      }
-    };
-
     return (
       <div className="channelList">
-        <button className="addServerButton" onClick={() => setShowAddServerModal(true)}>
-        <img src="./plus.png" alt=""/>
-        </button>
-        {servers.length > 0 ? (
-          servers.map((server) => (
-            <div
-              key={server.id}
-              className={`server ${currentServerId === server.id ? "activeServer" : ""}`}
-              onClick={() => setCurrentServerId(server.id)}
-            >
-              <img src={server.icon || "/avatar.png"} alt={server.name} />
-              {/*
-              <button 
-                className="deleteServerButton" 
-                onClick={(e) => { 
-                  e.stopPropagation(); // Prevent the click from triggering the server selection
-                  handleDeleteServer(server.id);
-                }}
+        <div className="serverContainer">
+          <button className="addServerButton" onClick={() => setShowAddServerModal(true)}>
+            <img src="./plus.png" alt=""/>
+          </button>
+          {servers.length > 0 ? (
+            servers.map((server) => (
+              <div
+                key={server.id}
+                className={`server ${currentServerId === server.id ? "activeServer" : ""}`}
+                onClick={() => setCurrentServerId(server.id)}
               >
-                ❌
-              </button>*/}
-            </div>
-          ))
-        ) : (
-          <p>Loading servers...</p>
-        )}
+                <img src={server.icon || "/avatar.png"} alt={server.name} />
+              </div>
+            ))
+          ) : (
+            <p>Loading servers...</p>
+          )}
 
-        {showAddServerModal && (
-          <div className="addServerModal">
-            <div className="modalContent">
-              <h3>Create a New Server</h3>
-              <input
-                type="text"
-                placeholder="Server Name"
-                value={newServerName}
-                onChange={(e) => setNewServerName(e.target.value)}
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileUpload(e)}
-              />
-              <div className="modalButtons">
-                <button className="cancelButton" onClick={() => setShowAddServerModal(false)}>
-                  Cancel
-                </button>
-                <button className="createButton" onClick={handleAddServer}>
-                  Create Server
-                </button>
+          {showAddServerModal && (
+            <div className="addServerModal">
+              <div className="modalContent">
+                <h3>Create a New Server</h3>
+                <input
+                  type="text"
+                  placeholder="Server Name"
+                  value={newServerName}
+                  onChange={(e) => setNewServerName(e.target.value)}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e)}
+                />
+                <div className="modalButtons">
+                  <button className="cancelButton" onClick={() => setShowAddServerModal(false)}>
+                    Cancel
+                  </button>
+                  <button className="createButton" onClick={handleAddServer}>
+                    Create Server
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+        <div className="directMessageContainer">
+          <button className="directMessageButton">
+            <img src="./messenger.png" alt=""/>
+          </button>
+        </div>
       </div>
     );
 };
