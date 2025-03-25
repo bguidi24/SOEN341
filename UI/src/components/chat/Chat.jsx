@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
 import { db } from "../../firebase"; 
@@ -11,10 +11,13 @@ import {
     orderBy,
     doc,
     getDoc,
+    deleteDoc,
+    getDocs
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const Chat = ({ channelId, serverId }) => {
+    const dropdownRef = useRef(null);
     const [open, setOpen] = useState(false);   
     const [text, setText] = useState("");   
     const [messages, setMessages] = useState([]);
@@ -22,9 +25,34 @@ const Chat = ({ channelId, serverId }) => {
     const [showPostModal, setShowPostModal] = useState(false); // Controls the modal visibility
     const [postText, setPostText] = useState(""); // Stores the message inside the modal
     const [posts, setPosts] = useState([]);
+    const [userProfiles, setUserProfiles] = useState({});
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+        
+    const allChatItems = [...messages.map(msg => ({ ...msg, isPost: false })), 
+        ...posts.map(post => ({ ...post, isPost: true }))]
+    .sort((a, b) => a.timestamp?.toDate() - b.timestamp?.toDate());
+
+    const formatTimestamp = (timestamp) => {
+        if (!timestamp) return "";
+        const date = timestamp.toDate();
+        const hours = date.getHours().toString().padStart(2, "0");
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+    
+        return `${hours}:${minutes}`;
+    };
+
+    const [user, setUser] = useState(null); // Store user state
     const auth = getAuth();
-    const user = auth.currentUser; // Get logged-in user
+    
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+            setUser(currentUser); // Update state when user logs in or out
+        });
+    
+        return () => unsubscribe(); // Cleanup listener when component unmounts
+    }, []);
 
     // Fetch Server Details
     useEffect(() => {
@@ -54,40 +82,72 @@ const Chat = ({ channelId, serverId }) => {
 
     useEffect(() => {
         if (!channelId) {
-            setMessages([]); // Clear messages if no channelId
-            return; // Don't fetch messages if no channel is selected
-        }
-    
-        const q = query(
-            collection(db, "channels", channelId, "messages"), // Adjusted path to use the subcollection
-            orderBy("timestamp", "asc")
-        );
-    
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
-    
-        return () => unsubscribe(); // Cleanup listener on unmount
-    }, [channelId]);
-
-    // Fetch Posts
-    useEffect(() => {
-        if (!channelId) {
+            setMessages([]);
             setPosts([]);
             return;
         }
-
-        const q = query(
-            collection(db, "channels", channelId, "posts"), 
+    
+        const messagesQuery = query(
+            collection(db, "channels", channelId, "messages"),
             orderBy("timestamp", "asc")
         );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            setPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    
+        const postsQuery = query(
+            collection(db, "channels", channelId, "posts"),
+            orderBy("timestamp", "asc")
+        );
+    
+        const unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+            const newMessages = snapshot.docs.map(doc => ({
+                id: doc.id,
+                type: "message", // Add type identifier
+                ...doc.data()
+            }));
+            setMessages(newMessages);
         });
-
-        return () => unsubscribe();
+    
+        const unsubscribePosts = onSnapshot(postsQuery, (snapshot) => {
+            const newPosts = snapshot.docs.map(doc => ({
+                id: doc.id,
+                type: "post", // Add type identifier
+                ...doc.data()
+            }));
+            setPosts(newPosts);
+        });
+    
+        return () => {
+            unsubscribeMessages();
+            unsubscribePosts();
+        };
     }, [channelId]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const usersRef = collection(db, "users"); // Firestore users collection
+            const snapshot = await getDocs(usersRef);
+            const profiles = {};
+            snapshot.forEach(doc => {
+                profiles[doc.id] = doc.data(); // Store user data by UID
+            });
+            setUserProfiles(profiles);
+        };
+    
+        fetchUsers();
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+    
+        document.addEventListener("mousedown", handleClickOutside);
+    
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const handleEmoji = e => {
         setText(prev => prev + e.emoji);
@@ -98,18 +158,14 @@ const Chat = ({ channelId, serverId }) => {
         e.preventDefault();
         if (!text.trim() || !channelId) return;  // Ensure the message is not empty and a channel is selected
         
-        const auth = getAuth();
-        const user = auth.currentUser; // Get logged-in user
-        
-        const sender = user ? user.uid : "guest";  // If logged in, use the user's UID; otherwise, "guest"
+        const sender = user ? user.uid : "guest";  // If no user, use "guest" as sender
         
         try {
-            // Ensure the channelId is passed correctly
             await addDoc(collection(db, "channels", channelId, "messages"), {
                 text: text,
-                timestamp: serverTimestamp(),  // Firestore server time
-                sender: sender, // Store either the user's UID or "guest"
-                channelId: channelId // Store the message under the selected channel
+                timestamp: serverTimestamp(),
+                sender: sender, // Store "guest" for non-authenticated users
+                channelId: channelId
             });
             setText(""); // Clear input after sending
         } catch (error) {
@@ -143,23 +199,22 @@ const Chat = ({ channelId, serverId }) => {
     };
 
     const handleImageUpload = async (e) => {
-        const file = e.target.files[0]; // Get the selected file
+        const file = e.target.files[0];
         if (!file) return; // If no file is selected, do nothing
     
-        // Convert file to Base64 string
         const reader = new FileReader();
         reader.readAsDataURL(file);  // Read file as Base64
     
         reader.onload = async () => {
-            const base64String = reader.result;  // Get the Base64 string
+            const base64String = reader.result;
     
             try {
-                // Send the Base64 string as a message
+                const sender = user ? user.uid : "guest";  // Default to "guest" if no user is logged in
                 await addDoc(collection(db, "channels", channelId, "messages"), {
-                    text: "",  // No text for image message
-                    imageUrl: base64String,  // Store the Base64 string
+                    text: "",
+                    imageUrl: base64String,
                     timestamp: serverTimestamp(),
-                    sender: user ? user.uid : "guest",
+                    sender: sender,
                     channelId: channelId
                 });
             } catch (error) {
@@ -172,55 +227,85 @@ const Chat = ({ channelId, serverId }) => {
         };
     };
 
+    const handleDeleteServer = async () => {
+        if (!serverId) return;
+    
+        try {
+            await deleteDoc(doc(db, "servers", serverId));
+            console.log("Server deleted:", serverId);
+            setShowDeleteModal(false);
+        } catch (error) {
+            console.error("Error deleting server:", error);
+        }
+    };
+
     return (
         <div className="chat">
             <div className="top">
                 <div className="serverName">
                 <img src={server ? server.icon : "./avatar.png"} alt="Server Avatar" />
-                <div className="texts">
-                    <span>{server ? server.name : "Server Name"}</span>
-                </div>
+                    <div className="texts">
+                        <span>{server ? server.name : "Server Name"}</span>
+                    </div>
                 </div>
                 <div className="icons">
-                    <img src="./phone.png" alt="" />
-                    <img src="./video.png" alt="" />
-                    <img src="./info.png" alt="" />
+                    <img src="./plus.png" alt="" />
+                    <img src="./info.png" alt="Server Info" onClick={() => setShowDropdown(prev => !prev)} style={{ cursor: "pointer" }} />
+                    {showDropdown && (
+                        <div className="dropdownMenu" ref={dropdownRef}>
+                            <button 
+                                className="deleteButton" 
+                                onClick={() => setShowDeleteModal(true)}
+                            >
+                                🗑️ Delete Server
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
-            {posts.length > 0 && (
-                <div className="postsSection">
-                    {posts.map((post) => (
-                        <div key={post.id} className="post">
+            <div className="center">
+            {channelId ? (
+                allChatItems.map((item, index) => {
+                    const isOwnMessage = item.sender === (user?.uid || "guest");
+                    const className = item.isPost ? "postItem" : isOwnMessage ? "message right" : "message left";
+
+                    console.log(`Message ${index}: sender=${item.sender}, user=${user?.uid}, class=${className}`);
+
+                    return (
+                        <div key={index} className={className}>
+                            <img
+                                src={userProfiles[item.sender]?.avatar || "./avatar.png"}
+                                alt="User Avatar"
+                                className="userAvatar"
+                            />
                             <div className="texts">
-                                <h4>📢 Post</h4>
-                                <p>{post.text}</p>
-                                <span>{post.timestamp ? new Date(post.timestamp.toDate()).toLocaleTimeString() : "Now"}</span>
+                                {item.isPost ? (
+                                    <>
+                                        <h4>{item.userName} 📢 Post</h4>
+                                        <p>{item.text}</p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>{item.userName}</span>
+                                        {item.imageUrl ? (
+                                            <img src={item.imageUrl} alt="Uploaded" className="messageImage" />
+                                        ) : (
+                                            <p>{item.text}</p>
+                                        )}
+                                    </>
+                                )}
                             </div>
+                            <span className="timestamp">
+                                {formatTimestamp(item.timestamp)}
+                            </span>
                         </div>
-                    ))}
+                    );
+                })
+            ) : (
+                <div className="selectChannelMessage">
+                    <h3>Select a channel</h3>
                 </div>
             )}
-            <div className="center">
-                {channelId ? (
-                    messages.map((msg) => (
-                        <div
-                            key={msg.id}
-                            className={`message ${msg.sender === (user ? user.uid : "guest") ? "own" : ""}`}
-                        >
-                            <div className="texts">
-                                {msg.text && <p>{msg.text}</p>}
-                                {msg.imageUrl && (
-                                    <img src={msg.imageUrl} alt="Uploaded" className="messageImage" />
-                                )}
-                                <span>{msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString() : "Now"}</span>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="selectChannelMessage">
-                        <h3>Select a channel</h3>
-                    </div>
-                )}
             </div>
             <div className="bottom">
             <div className="icons">
@@ -268,6 +353,17 @@ const Chat = ({ channelId, serverId }) => {
                         <div className="postButtons">
                             <button className="cancelButton" onClick={() => setShowPostModal(false)}>Cancel</button>
                             <button className="postButton" onClick={handlePostMessage}>Post</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showDeleteModal && (
+                <div className="modalOverlay">
+                    <div className="modalContent">
+                        <h3>Do you really want to delete this server?</h3>
+                        <div className="modalButtons">
+                            <button className="cancelButton" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                            <button className="confirmDeleteButton" onClick={handleDeleteServer}>Delete</button>
                         </div>
                     </div>
                 </div>
