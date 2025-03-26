@@ -36,24 +36,24 @@
     width: 90px;
     top: 30px; /* Adjust based on your layout */
     right: 0;
-    background-color: #18191c;
     border-radius: 5px;
-    padding: 5px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid white;
     display: flex;
     flex-direction: column;
 }
 
-.dropdownLogout button {
-    background: none;
+.dropdownLogout .logoutButton {
+    background-color: #313338;
+    border-radius: 5px;
     border: none;
     color: white;
     padding: 8px 12px;
     cursor: pointer;
     text-align: center;
     width: 100%;
+    transition: all 0.2s;
 }
 
-.dropdownLogout button:hover {
+.dropdownLogout .logoutButton:hover {
     background-color: red;
 }

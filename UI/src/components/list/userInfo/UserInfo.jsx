@@ -34,7 +34,7 @@ const UserInfo = () => {
                 />
                 {isDropdownOpen && (
                     <div className="dropdownLogout">
-                        <button onClick={handleLogout}>Log Out</button>
+                        <button className="logoutButton" onClick={handleLogout}>Log Out</button>
                     </div>
                 )}
             </div>
