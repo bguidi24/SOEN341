@@ -1,6 +1,9 @@
 // src/firebase-config.js
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth"
+import { getFirestore } from "firebase/firestore"
+import { getStorage } from "firebase/storage"
 
 const firebaseConfig = {
   apiKey: "AIzaSyClsa5TE77M2IDrB8rZexYVvfv_l4cvIPs",
@@ -13,8 +16,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
+const analytics = getAnalytics(app);
 // Initialize Firestore
 const db = getFirestore(app);
 
+export const auth = getAuth()
 export { db };
+export const storage = getStorage()
