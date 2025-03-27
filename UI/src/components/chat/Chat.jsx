@@ -278,6 +278,7 @@ const Chat = ({ channelId, serverId }) => {
                                 alt="User Avatar"
                                 className="userAvatar"
                             />
+                            <span className="username">{userProfiles[item.sender]?.username || "Guest"}</span>
                             <div className="texts">
                                 {item.isPost ? (
                                     <>
@@ -286,7 +287,6 @@ const Chat = ({ channelId, serverId }) => {
                                     </>
                                 ) : (
                                     <>
-                                        <span>{item.userName}</span>
                                         {item.imageUrl ? (
                                             <img src={item.imageUrl} alt="Uploaded" className="messageImage" />
                                         ) : (

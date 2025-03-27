@@ -1,5 +1,5 @@
 import "./userInfo.css"
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
 import { useUserStore } from "../../../userStore";
@@ -8,6 +8,7 @@ const UserInfo = () => {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { currentUser } = useUserStore();
+    const dropdownRef = useRef(null);
 
     const handleLogout = async () => {
         try {
@@ -18,18 +19,31 @@ const UserInfo = () => {
         }
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
         <div className="userInfo">
             <div className="user">
                 <img src={currentUser?.photoURL || "./avatar.png"} alt="User Avatar" />
-                <h2>{currentUser?.displayName || "Username"}</h2>
+                <h2>{currentUser?.username || "Guest"}</h2>
             </div>
 
-            {/* More Icon with Dropdown */}
-            <div className="icons">
+            <div className="icons" ref={dropdownRef}>
                 <img 
                     src="./more.png" 
-                    alt="More Options" 
+                    alt="More Options"  
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 />
                 {isDropdownOpen && (

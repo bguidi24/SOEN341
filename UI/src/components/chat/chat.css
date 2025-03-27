@@ -70,7 +70,7 @@
             border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 10px;
-        
+
             h4 {
                 color: #ff7b00; /* Orange color for post title */
                 font-size: 16px;
@@ -88,13 +88,16 @@
                 color: gray;
             }
         }
+
+        .username {
+            font-size: 16px;
+        }
         
         /* Messages styling */
         .message {
             max-width: 70%;
             display: flex;
             gap: 5px;
-            align-items: flex-start;
         }
 
         .message.left {
@@ -135,7 +138,6 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            margin-right: 5px;
             object-fit: cover;
         }
 
@@ -300,9 +302,10 @@
     }
     
     .dropdownMenu {
+        width: 90px;
         position: absolute;
-        right: 25px;
-        top: 65px;
+        right: 0;
+        top: 30px;
         background: white;
         border: 1px solid #ccc;
         border-radius: 5px;
@@ -316,7 +319,7 @@
         color: white;
         padding: 10px;
         width: 100%;
-        text-align: left;
+        text-align: center;
         cursor: pointer;
         transition: all 0.2s;
     }
