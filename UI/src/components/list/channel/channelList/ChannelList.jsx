@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { db } from "../../../../firebase";
 import "./channelList.css"
+
 import { collection, getDocs, addDoc, onSnapshot} from "firebase/firestore";
 
-const ChannelList = ({ setCurrentServerId, currentServerId }) => {
+const ChannelList = ({ setCurrentServerId, currentServerId, setIsDMMode }) => {
 
     const [servers, setServers] = useState([]); // FIX: Declare useState for servers
     const [showAddServerModal, setShowAddServerModal] = useState(false); // Manage modal visibility
@@ -113,8 +114,14 @@ const ChannelList = ({ setCurrentServerId, currentServerId }) => {
           )}
         </div>
         <div className="directMessageContainer">
-          <button className="directMessageButton">
-            <img src="./messenger.png" alt=""/>
+          <button
+            className="directMessageButton"
+            onClick={() => {
+              setCurrentServerId(null);     // Optional: clear selection
+              setIsDMMode(true);            // 👉 Switch to ChatList (DMs)
+            }}
+            >
+            <img src="./messenger.png" alt="Direct Messages" />
           </button>
         </div>
       </div>

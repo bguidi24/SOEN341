@@ -115,7 +115,7 @@
         }
 
         .message.right {
-            align-self: flex-end;
+            align-self: flex-start;
 
             .texts {
                 display: flex;
