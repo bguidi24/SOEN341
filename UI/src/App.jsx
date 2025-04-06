@@ -19,6 +19,10 @@ const App = () => {
   useEffect(() => {
     const unSub = onAuthStateChanged(auth, (user) => {
       fetchUserInfo(user?.uid);
+
+      // Reset channel and server selection when user logs in
+      setSelectedChannel(null);
+      setSelectedServer(null);
     });
 
     return () => {
@@ -38,6 +42,7 @@ const App = () => {
             setSelectedServer={setSelectedServer} 
             setIsDMMode={setIsDMMode}
             isDMMode={isDMMode}
+            currentUserId={currentUser.uid}
           />
           {isDMMode ? (
             <DirectChat />

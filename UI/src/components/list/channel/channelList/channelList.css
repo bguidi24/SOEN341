@@ -148,7 +148,7 @@
 }
 
 .createButton {
-    background-color: #4caf50;
+    background-color: #007bff;
     color: white;
 }
 
@@ -157,7 +157,7 @@
 }
 
 .createButton:hover {
-    background-color: #285e2a;
+    background-color: #0059b8;
 }
 
 .directMessageContainer {

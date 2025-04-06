@@ -2,7 +2,7 @@ import Channel from "./channel/Channel"
 import "./list.css"
 import UserInfo from "./userInfo/UserInfo"
 
-const List = ({ selectedChannel, setSelectedChannel, setSelectedServer, isDMMode, setIsDMMode }) => {
+const List = ({ selectedChannel, setSelectedChannel, setSelectedServer, isDMMode, setIsDMMode, currentUserId }) => {
     return (
         <div className="list">
             <UserInfo/>
@@ -12,6 +12,7 @@ const List = ({ selectedChannel, setSelectedChannel, setSelectedServer, isDMMode
             setSelectedServer={setSelectedServer} 
             setIsDMMode={setIsDMMode}
             isDMMode={isDMMode}
+            userId={currentUserId} 
             />
         </div>
     );

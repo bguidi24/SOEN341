@@ -4,7 +4,7 @@ import ChannelInfo from "./channelInfo/ChannelInfo";
 import ChatList from "./chatList/ChatList";
 import "./channel.css";
 
-const Channel = ({ selectedChannel, setSelectedChannel, setSelectedServer, isDMMode, setIsDMMode }) => {
+const Channel = ({ selectedChannel, setSelectedChannel, setSelectedServer, isDMMode, setIsDMMode, userId }) => {
 
   const [currentServerId, setCurrentServerId] = useState(null);
 
@@ -30,6 +30,7 @@ const Channel = ({ selectedChannel, setSelectedChannel, setSelectedServer, isDMM
           selectedChannel={selectedChannel}
           serverId={currentServerId}
           setSelectedChannel={setSelectedChannel}
+          userId={userId}
         />
       ) : (
         <p></p>

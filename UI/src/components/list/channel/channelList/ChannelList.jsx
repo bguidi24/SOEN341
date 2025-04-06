@@ -2,46 +2,72 @@ import { useEffect, useState } from "react";
 import { db } from "../../../../firebase";
 import "./channelList.css"
 
-import { collection, getDocs, addDoc, onSnapshot} from "firebase/firestore";
+import { collection, getDocs, addDoc, onSnapshot, doc, setDoc} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
-const ChannelList = ({ setCurrentServerId, currentServerId, setIsDMMode }) => {
+const ChannelList = ({ setCurrentServerId, currentServerId, setIsDMMode}) => {
 
     const [servers, setServers] = useState([]); // FIX: Declare useState for servers
     const [showAddServerModal, setShowAddServerModal] = useState(false); // Manage modal visibility
     const [newServerName, setNewServerName] = useState(""); // Store new server name
     const [newServerIcon, setNewServerIcon] = useState(""); // Store new server icon URL
 
+    const auth = getAuth();
+    const currentUserId = auth.currentUser?.uid;
+
     useEffect(() => {
-      const unsubscribe = onSnapshot(collection(db, "servers"), (snapshot) => {
-        const serverList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setServers(serverList);
+      if (!currentUserId) return;
+    
+      const unsubscribe = onSnapshot(collection(db, "servers"), async (snapshot) => {
+        const allServers = snapshot.docs;
+        const memberServerList = [];
+    
+        for (const serverDoc of allServers) {
+          const serverId = serverDoc.id;
+          const memberDocRef = doc(db, "servers", serverId, "members", currentUserId);
+    
+          const memberDocSnap = await getDocs(collection(db, `servers/${serverId}/members`));
+          const isMember = memberDocSnap.docs.find((doc) => doc.id === currentUserId);
+    
+          if (isMember) {
+            memberServerList.push({
+              id: serverId,
+              ...serverDoc.data(),
+            });
+          }
+        }
+    
+        setServers(memberServerList);
       });
     
-      return () => unsubscribe(); // Cleanup listener on unmount
-    }, []);
+      return () => unsubscribe();
+    }, [currentUserId]);
 
-        // Handle creating a new server
+    // Handle creating a new server
     const handleAddServer = async () => {
-      if (!newServerName.trim()) return; // Validate server name
-  
+      if (!newServerName.trim()) return;
+    
       try {
         const newServer = {
           name: newServerName,
-          icon: newServerIcon || "/avatar.png", // Default icon if not provided
-          };
-  
+          icon: newServerIcon || "/logo192.png",
+        };
+        
         // Add new server to Firestore
         const docRef = await addDoc(collection(db, "servers"), newServer);
         console.log("Server created with ID:", docRef.id);
-  
+        
+        // ✅ Add current user to the new server's members subcollection
+        await setDoc(doc(db, "servers", docRef.id, "members", currentUserId), {
+          joinedAt: new Date(),
+          role: "owner", // or "member"
+        });
+        
         // Reset the form and close the modal
         setNewServerName("");
         setNewServerIcon("");
         setShowAddServerModal(false);
-  
+        
         // Refresh server list
         const querySnapshot = await getDocs(collection(db, "servers"));
         const updatedServerList = querySnapshot.docs.map((doc) => ({
@@ -49,7 +75,7 @@ const ChannelList = ({ setCurrentServerId, currentServerId, setIsDMMode }) => {
           ...doc.data(),
         }));
         setServers(updatedServerList);
-  
+        
       } catch (error) {
         console.error("Error adding new server:", error);
       }
@@ -79,11 +105,11 @@ const ChannelList = ({ setCurrentServerId, currentServerId, setIsDMMode }) => {
                 className={`server ${currentServerId === server.id ? "activeServer" : ""}`}
                 onClick={() => setCurrentServerId(server.id)}
               >
-                <img src={server.icon || "/avatar.png"} alt={server.name} />
+                <img src={server.icon || "/logo192.png"} alt={server.name} />
               </div>
             ))
           ) : (
-            <p>Loading servers...</p>
+            <p></p>
           )}
 
           {showAddServerModal && (

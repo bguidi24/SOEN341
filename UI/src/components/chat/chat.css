@@ -380,6 +380,51 @@
     .modalButtons .cancelButton:hover {
         background: rgb(71, 71, 71);
     }
+
+    .modalContentAddUser {
+        background: rgb(31, 31, 31);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+    }
+
+    .userList {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .userItem {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .addUserButton {
+        padding: 5px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        background-color:#007bff;
+        cursor: pointer;
+    }
+
+    .addUserButton:hover {
+        background-color: #0059b8;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
+        text-align: center;
+    }
 }
 
 

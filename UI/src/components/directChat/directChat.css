@@ -66,14 +66,14 @@
       .message {
         max-width: 70%;
         display: flex;
-        gap: 20px;
+        gap: 5px;
   
         &.own {
           align-self: flex-end;
   
           .texts {
             p {
-              background-color: #5183fe;
+              background-color: #362ca5;
             }
           }
         }
@@ -98,9 +98,10 @@
           }
   
           p {
-            padding: 20px;
+            padding: 15px;
             background-color: rgba(17, 25, 40, 0.3);
             border-radius: 10px;
+            width: fit-content;
           }
   
           span {

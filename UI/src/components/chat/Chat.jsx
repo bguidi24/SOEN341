@@ -12,7 +12,8 @@ import {
     doc,
     getDoc,
     deleteDoc,
-    getDocs
+    getDocs,
+    setDoc
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -28,6 +29,9 @@ const Chat = ({ channelId, serverId }) => {
     const [userProfiles, setUserProfiles] = useState({});
     const [showDropdown, setShowDropdown] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showAddUserModal, setShowAddUserModal] = useState(false);
+    const [selectedRoles, setSelectedRoles] = useState({});
+    const [errorMessage, setErrorMessage] = useState("");
 
         
     const allChatItems = [...messages.map(msg => ({ ...msg, isPost: false })), 
@@ -60,16 +64,34 @@ const Chat = ({ channelId, serverId }) => {
     
         const fetchServer = async () => {
             try {
-                console.log("Fetching server:", serverId);
                 const serverRef = doc(db, "servers", serverId);
                 const serverSnap = await getDoc(serverRef);
-            
-                if (serverSnap.exists()) {
-                    setServer(serverSnap.data());
-                } else {
+        
+                if (!serverSnap.exists()) {
                     console.error("Server not found:", serverId);
-                    setServer({ name: "Unknown", icon: "./avatar.png" }); // Prevent crash
+                    setServer({ name: "Unknown", icon: "./avatar.png" });
+                    return;
                 }
+        
+                const userId = auth.currentUser?.uid;
+                if (!userId) {
+                    console.warn("No user logged in.");
+                    setServer(null); // or show restricted message
+                    return;
+                }
+        
+                const memberRef = doc(db, "servers", serverId, "members", userId);
+                const memberSnap = await getDoc(memberRef);
+        
+                if (!memberSnap.exists()) {
+                    console.warn("User is not a member of this server:", userId);
+                    setServer(null); // Or display restricted message
+                    return;
+                }
+        
+                // ✅ User is allowed to see server
+                setServer(serverSnap.data());
+        
             } catch (error) {
                 console.error("Firestore error:", error);
             }
@@ -79,6 +101,12 @@ const Chat = ({ channelId, serverId }) => {
     
         fetchServer();
     }, [serverId]);
+
+    // Reset messages and posts when switching servers or channels
+    useEffect(() => {
+        setMessages([]);
+        setPosts([]);
+    }, [serverId, channelId]);
 
     useEffect(() => {
         if (!channelId) {
@@ -228,9 +256,27 @@ const Chat = ({ channelId, serverId }) => {
     };
 
     const handleDeleteServer = async () => {
-        if (!serverId) return;
+        if (!serverId || !auth.currentUser) return;
     
+        const userId = auth.currentUser.uid;
+        
         try {
+            // Get the member document for the current user in the server
+            const memberRef = doc(db, "servers", serverId, "members", userId);
+            const memberSnap = await getDoc(memberRef);
+            
+            if (!memberSnap.exists()) {
+                console.warn("User is not a member of this server:", userId);
+                return;
+            }
+    
+            const memberData = memberSnap.data();
+            if (memberData.role !== "owner") {
+                setErrorMessage("Sorry, you are not an Admin or the Owner and cannot delete the server.");
+                return;
+            }
+    
+            // Only allow deletion if the user is the owner
             await deleteDoc(doc(db, "servers", serverId));
             console.log("Server deleted:", serverId);
             setShowDeleteModal(false);
@@ -239,17 +285,30 @@ const Chat = ({ channelId, serverId }) => {
         }
     };
 
+    const handleAddUserToServer = async (uidToAdd, role = "member") => {
+        try {
+            const memberRef = doc(db, "servers", serverId, "members", uidToAdd);
+            await setDoc(memberRef, {
+                addedAt: serverTimestamp(),
+                role: role // Store role
+            });
+            console.log("User added to server:", uidToAdd, "with role:", role);
+        } catch (error) {
+            console.error("Error adding user to server:", error);
+        }
+    };
+
     return (
         <div className="chat">
             <div className="top">
                 <div className="serverName">
-                <img src={server ? server.icon : "./avatar.png"} alt="Server Avatar" />
+                <img src={server ? server.icon : "./logo192.png"} alt="Server Avatar" />
                     <div className="texts">
                         <span>{server ? server.name : "Server Name"}</span>
                     </div>
                 </div>
                 <div className="icons">
-                    <img src="./plus.png" alt="" />
+                    <img src="./plus.png" alt="Add User" onClick={() => setShowAddUserModal(true)} style={{ cursor: "pointer" }} />
                     <img src="./info.png" alt="Server Info" onClick={() => setShowDropdown(prev => !prev)} style={{ cursor: "pointer" }} />
                     {showDropdown && (
                         <div className="dropdownMenu" ref={dropdownRef}>
@@ -268,8 +327,6 @@ const Chat = ({ channelId, serverId }) => {
                 allChatItems.map((item, index) => {
                     const isOwnMessage = item.sender === (user?.uid || "guest");
                     const className = item.isPost ? "postItem" : isOwnMessage ? "message right" : "message left";
-
-                    console.log(`Message ${index}: sender=${item.sender}, user=${user?.uid}, class=${className}`);
 
                     return (
                         <div key={index} className={className}>
@@ -361,10 +418,48 @@ const Chat = ({ channelId, serverId }) => {
                 <div className="modalOverlay">
                     <div className="modalContent">
                         <h3>Do you really want to delete this server?</h3>
+                        {errorMessage && <div className="error-message">{errorMessage}</div>}
                         <div className="modalButtons">
                             <button className="cancelButton" onClick={() => setShowDeleteModal(false)}>Cancel</button>
                             <button className="confirmDeleteButton" onClick={handleDeleteServer}>Delete</button>
                         </div>
+                    </div>
+                </div>
+            )}
+            {showAddUserModal && (
+                <div className="modalOverlay">
+                    <div className="modalContentAddUser">
+                    <h3>Add User to Server</h3>
+                    <div className="userList">
+                        {Object.entries(userProfiles).map(([uid, profile]) => (
+                            <div key={uid} className="userItem">
+                                <img src={profile.avatar || "./avatar.png"} alt="Avatar" />
+                                <span>{profile.username || "Guest"}</span>
+
+                                {/* Role Selector */}
+                                <select
+                                    value={selectedRoles[uid] || "member"} // default to member
+                                    onChange={(e) =>
+                                        setSelectedRoles(prev => ({ ...prev, [uid]: e.target.value }))
+                                    }
+                                >
+                                    <option value="member">Member</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+
+                                <button
+                                    className="addUserButton"
+                                    onClick={() => {
+                                        handleAddUserToServer(uid, selectedRoles[uid] || "member");
+                                        setShowAddUserModal(false);
+                                    }}
+                                >
+                                    Add
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                    <button className="cancelButton" onClick={() => setShowAddUserModal(false)}>Close</button>
                     </div>
                 </div>
             )}
