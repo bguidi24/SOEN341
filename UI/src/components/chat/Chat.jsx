@@ -32,6 +32,7 @@ const Chat = ({ channelId, serverId }) => {
     const [showAddUserModal, setShowAddUserModal] = useState(false);
     const [selectedRoles, setSelectedRoles] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
+    const [serverRole, setServerRole] = useState(null);
 
         
     const allChatItems = [...messages.map(msg => ({ ...msg, isPost: false })), 
@@ -177,6 +178,30 @@ const Chat = ({ channelId, serverId }) => {
         };
     }, []);
 
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            if (!serverId || !user?.uid) return;
+    
+            try {
+                const memberRef = doc(db, "servers", serverId, "members", user.uid);
+                const memberSnap = await getDoc(memberRef);
+    
+                if (memberSnap.exists()) {
+                    const memberData = memberSnap.data();
+                    setServerRole(memberData.role || null);
+                } else {
+                    console.warn("Member document missing for user:", user.uid);
+                    setServerRole(null);
+                }
+            } catch (error) {
+                console.error("Error fetching server role:", error);
+                setServerRole(null);
+            }
+        };
+    
+        fetchUserRole();
+    }, [serverId, user?.uid]);
+
     const handleEmoji = e => {
         setText(prev => prev + e.emoji);
         setOpen(false);
@@ -255,6 +280,16 @@ const Chat = ({ channelId, serverId }) => {
         };
     };
 
+    const handleDeleteItem = async (item) => {
+        const subcollection = item.isPost ? "posts" : "messages";
+        try {
+            await deleteDoc(doc(db, "channels", channelId, subcollection, item.id));
+            console.log(`${subcollection.slice(0, -1)} deleted!`);
+        } catch (error) {
+            console.error("Error deleting item:", error);
+        }
+    };
+
     const handleDeleteServer = async () => {
         if (!serverId || !auth.currentUser) return;
     
@@ -272,7 +307,7 @@ const Chat = ({ channelId, serverId }) => {
     
             const memberData = memberSnap.data();
             if (memberData.role !== "owner") {
-                setErrorMessage("Sorry, you are not an Admin or the Owner and cannot delete the server.");
+                setErrorMessage("Sorry, you are not the Owner and cannot delete the server.");
                 return;
             }
     
@@ -352,6 +387,16 @@ const Chat = ({ channelId, serverId }) => {
                                     </>
                                 )}
                             </div>
+                            {/* 🗑️ Delete Button Only for Admins and Owners */}
+                            {(serverRole === "admin" || serverRole === "owner") && (
+                                <button
+                                    className="deleteMsgBtn"
+                                    onClick={() => handleDeleteItem(item)}
+                                    title="Delete"
+                                >
+                                    🗑️
+                                </button>
+                            )}
                             <span className="timestamp">
                                 {formatTimestamp(item.timestamp)}
                             </span>

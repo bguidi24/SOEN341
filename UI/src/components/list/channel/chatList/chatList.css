@@ -42,13 +42,14 @@
         }
     }
 
-    .item{
+    .userChatItem{
         display: flex;
         align-items: center;
         gap: 20px;
         padding: 20px;
         cursor: pointer;
         border-bottom: 1px solid #dddddd35;
+        transition: all 0.3s;
 
         img {
             width: 50px;
@@ -72,5 +73,17 @@
                 font-weight: 300;
             }
         }
+    }
+
+    .userChatItem:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .userChatItem.unseen {
+        background-color: #ffffff40;
+    }
+
+    .userChatItem.active {
+        background-color: rgba(255, 255, 255, 0.1);
     }
 }

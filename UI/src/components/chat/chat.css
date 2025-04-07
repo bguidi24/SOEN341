@@ -145,7 +145,36 @@
             font-size: 0.8rem;
             color: rgb(151, 151, 151);
             margin-top: 5px;
-          }
+        }
+        
+        .deleteMsgBtn {
+            opacity: 0;
+            max-height: 0;
+            max-width: 0;
+            margin-right: 5px;
+            overflow: hidden;
+            width: fit-content;
+            height: fit-content;
+            background: red;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all ease 0.3s;
+        }
+        
+        .message.left:hover .deleteMsgBtn,
+        .message.right:hover .deleteMsgBtn,
+        .postItem:hover .deleteMsgBtn {
+            padding: 5px;
+            opacity: 1;
+            max-height: 40px;
+            max-width: 40px;
+        }
+
+        .deleteMsgBtn:hover {
+            background: darkred;
+        }
     }
 
     .bottom {
